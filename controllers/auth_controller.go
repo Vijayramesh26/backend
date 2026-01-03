@@ -26,11 +26,20 @@ func Login(c *gin.Context) {
 
 	var user models.User
 	if err := config.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
+		fmt.Println("DEBUG: User not found in DB")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	if !utils.CheckPassword(user.Password, body.Password) {
+	// --- ADD THESE DEBUG LINES ---
+	fmt.Printf("DEBUG: Input Password: [%s]\n", body.Password)
+	fmt.Printf("DEBUG: DB Hash Found:  [%s]\n", user.Password)
+
+	match := utils.CheckPassword(user.Password, body.Password)
+	fmt.Printf("DEBUG: Do they match? %v\n", match)
+	// -----------------------------
+
+	if !match {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}

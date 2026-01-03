@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"portfolio-admin-api/config"
 	"portfolio-admin-api/controllers"
 	"portfolio-admin-api/models"
@@ -13,7 +14,10 @@ import (
 )
 
 func main() {
-	godotenv.Load(".env.local") // or just ".env"
+	// Load env only for local
+	if os.Getenv("APP_ENV") != "production" {
+		_ = godotenv.Load(".env.local")
+	}
 	// Connect DB
 	config.ConnectDB()
 
