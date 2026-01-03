@@ -4,7 +4,7 @@ import "golang.org/x/crypto/bcrypt"
 
 // HashPassword - only for creating a new password / storing in DB
 func HashPassword(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return "", err
 	}
