@@ -12,25 +12,28 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-
-	// dsn := "root:root@tcp(localhost:3306)/portfolio?charset=utf8mb4&parseTime=True&loc=Local"
-
-	// 1. Get and Trim Environment Variables
 	user := strings.TrimSpace(os.Getenv("DB_USER"))
 	pass := strings.TrimSpace(os.Getenv("DB_PASSWORD"))
 	host := strings.TrimSpace(os.Getenv("DB_HOST"))
 	port := strings.TrimSpace(os.Getenv("DB_PORT"))
 	name := strings.TrimSpace(os.Getenv("DB_NAME"))
+	env := strings.TrimSpace(os.Getenv("APP_ENV"))
 
-	// 2. Build DSN (Data Source Name)
-	// IMPORTANT: SkySQL Serverless requires tls=true
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local&tls=true",
-		user, pass, host, port, name)
+	baseDSN := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		user, pass, host, port, name,
+	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// Enable TLS only in production
+	if env == "production" {
+		baseDSN += "&tls=true"
+	}
+
+	db, err := gorm.Open(mysql.Open(baseDSN), &gorm.Config{})
 	if err != nil {
-		panic("Failed to connect database")
+		panic(fmt.Errorf("database connection failed: %w", err))
 	}
 
 	DB = db
+	fmt.Println("✅ Database connected:", env)
 }

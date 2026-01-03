@@ -2,15 +2,18 @@ package main
 
 import (
 	"portfolio-admin-api/config"
+	"portfolio-admin-api/controllers"
 	"portfolio-admin-api/models"
 	"portfolio-admin-api/routes"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load(".env.local") // or just ".env"
 	// Connect DB
 	config.ConnectDB()
 
@@ -31,7 +34,8 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
+	// Health check (Render needs this)
+	r.GET("/health", controllers.HealthCheck)
 	routes.SetupRoutes(r)
 
 	r.Run(":8080")

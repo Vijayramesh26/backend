@@ -10,6 +10,7 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	api := r.Group("/api")
 
+	api.GET("/ping", controllers.Ping)
 	api.POST("/admin/login", controllers.Login)
 
 	admin := api.Group("/admin")
